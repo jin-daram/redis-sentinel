@@ -3,7 +3,7 @@ version: "3.8"
 services:
   redis-master:
     image: redis:latest
-    contiainer_name: redis-master
+    container_name: redis-master
     ports:
       - "6379:6379"
     networks:
@@ -39,9 +39,9 @@ services:
       - "26379:26379"
     networks:
       - redis-net
-    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel-conf/sentinel.conf"
+    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel.conf"
     volumes:
-      - ./sentinel-conf-1:/etc/sentinel/sentinel-conf
+      - ./sentinel.conf:/etc/sentinel/sentinel.conf
 
   sentinel-2:
     image: redis:latest
@@ -50,9 +50,9 @@ services:
       - "26380:26379"
     networks:
       - redis-net
-    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel-conf/sentinel.conf"
+    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel.conf"
     volumes:
-      - ./sentinel-conf-2:/etc/sentinel/sentinel-conf
+      - ./sentinel.conf:/etc/sentinel/sentinel.conf
 
   sentinel-3:
     image: redis:latest
@@ -61,9 +61,9 @@ services:
       - "26381:26379"
     networks:
       - redis-net
-    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel-conf/sentinel.conf"
+    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel.conf"
     volumes:
-      - ./sentinel-conf-3:/etc/sentinel/sentinel-conf
+      - ./sentinel.conf:/etc/sentinel/sentinel.conf
 
 networks:
   redis-net:
