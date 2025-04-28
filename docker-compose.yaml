@@ -1,0 +1,70 @@
+version: "3.8"
+
+services:
+  redis-master:
+    image: redis:latest
+    contiainer_name: redis-master
+    ports:
+      - "6379:6379"
+    networks:
+      - redis-net
+    command: ["redis-server", "--appendonly", "yes"]
+
+  redis-replica-1:
+    image: redis:latest
+    container_name: redis-replica-1
+    depends_on:
+      - redis-master
+    ports:
+      - "6380:6379"
+    networks:
+      - redis-net
+    command: ["redis-server", "--slaveof", "redis-master", "6379"]
+
+  redis-replica-2:
+    image: redis:latest
+    container_name: redis-replica-2
+    depends_on:
+      - redis-master
+    ports:
+      - "6381:6379"
+    networks:
+      - redis-net
+    command: ["redis-server", "--slaveof", "redis-master", "6379"]
+
+  sentinel-1:
+    image: redis:latest
+    container_name: sentinel-1
+    ports:
+      - "26379:26379"
+    networks:
+      - redis-net
+    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel-conf/sentinel.conf"
+    volumes:
+      - ./sentinel-conf-1:/etc/sentinel/sentinel-conf
+
+  sentinel-2:
+    image: redis:latest
+    container_name: sentinel-2
+    ports:
+      - "26380:26379"
+    networks:
+      - redis-net
+    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel-conf/sentinel.conf"
+    volumes:
+      - ./sentinel-conf-2:/etc/sentinel/sentinel-conf
+
+  sentinel-3:
+    image: redis:latest
+    container_name: sentinel-3
+    ports:
+      - "26381:26379"
+    networks:
+      - redis-net
+    command: sh -c "sleep 5 && redis-sentinel /etc/sentinel/sentinel-conf/sentinel.conf"
+    volumes:
+      - ./sentinel-conf-3:/etc/sentinel/sentinel-conf
+
+networks:
+  redis-net:
+    driver: bridge
