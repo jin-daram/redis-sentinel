@@ -80,9 +80,20 @@ docker logs -f sentinel-1
 redis-cli > SENTINEL get-master-addr-by-name {모니터링 하고 있는 Master 이름}
 ```
 
-다음과 같이 다른 Replica Redis Instance의 주소가 저장되어 있는 것을 확인할 수 있다. 이 때 삭제되었던 redis-master를 다시 살리게 되면 해당 인스턴스가 다시 Master가 되는 것이 아닌, Replication으로 들어가게 된다. 
+다음과 같이 다른 Replica Redis Instance의 주소가 저장되어 있는 것을 확인할 수 있다.
 
-Master로 승격하게 된 replica를 다시 삭제하게 되면 하나 남은 Replica Redis Instance와 복구된 `redis-master`에 대해 `Sentinel`들이 각각 투표를 하게 되고, 그 중 하나가 Master로 승격되게 된다. 이런식으로 순환되면서 계속해서 고가용성(HA)을 유지한다. 
+![alt text](image-3.png) 
+
+또는, **Master**로 승격된 이전 `Replica Redis Instance`에서 `info replication` 를 입력하면 `role:master` 를 확인할 수 있다.
+
+![role:master 확인](image-2.png)
+
+
+
+
+이 때 삭제한 `redis-master`를 다시 살리게 되면 해당 인스턴스가 다시 **Master**가 되는 것이 아닌, `Replication`으로 들어가게 된다. 
+
+**Master**로 승격하게 된 `replica`를 다시 삭제하게 되면 하나 남은 Replica Redis Instance와 복구된 `redis-master`에 대해 `Sentinel`들이 각각 투표를 하게 되고, 그 중 하나가 Master로 승격되게 된다. 이런식으로 순환되면서 계속해서 **고가용성(HA)**을 유지한다. 
 
 
 
@@ -96,6 +107,7 @@ docker exec -it sentinel-1 redis-cli -p 26379
 ```
 
 그럼 다음과 같은 결과를 받을 수 있다.
+
 ![alt text](image.png)
 `Sentinel`이 바라보고 있는 Master(`mymaster`) 의 `Host`와 `Port`를 확인할 수 있다.
 
